@@ -4,7 +4,7 @@ This is the assignment given to us by Banao Technology which is based on the Flu
 
 ## Getting Started
 
-# First Task:
+#First Task:
 In the first task, we had to make a UI of an application that was given to us in Figma. By seeing the Figma image we have to build the UI.
 
 #Second Task:
