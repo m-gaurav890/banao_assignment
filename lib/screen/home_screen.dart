@@ -1,5 +1,11 @@
+import 'dart:convert';
+import 'package:banao_assignment/models/lessons_model.dart';
+import 'package:banao_assignment/models/programs_model.dart';
+import 'package:banao_assignment/screen/show%20all.dart';
+import 'package:banao_assignment/screen/show%20all2.dart';
 import 'package:banao_assignment/screen/side_menu_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,22 +16,64 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-  List programCatList = [
-    {
-      "imgUrl":
-          "https://indianparentingblog.com/wp-content/uploads/2022/11/Pros-and-Cons-450x450.jpg",
-      "heading": "LIFESTYLE",
-      "content": "A complete guide for \nyour new born baby",
-      "lessons": "16 lessons"
-    },
-    {
-      "imgUrl":
-          "https://www.konde.co/wp-content/uploads/2022/06/4956845-2.png",
-      "heading": "WORKING PARENTS",
-      "content": "Understanding of human \nbehaviour",
-      "lessons": "12 lessons"
-    },
-  ];
+
+  bool isLoading = true;
+
+  //Programs list
+  List<ProgramsQueryModel> programModelList = [];
+  List<LessonsQueryModel> lessonModelList = [];
+  late Map element;
+  int i = 0;
+  int j = 0;
+
+  //function for program  api
+  Future<void> getPrograms(String query) async {
+    String url = "https://632017e19f82827dcf24a655.mockapi.io/api/$query";
+    Response response = await get(Uri.parse(url));
+    Map data = jsonDecode(response.body);
+
+    for (element in data["items"]) {
+      try {
+        i++;
+        ProgramsQueryModel programModel = ProgramsQueryModel();
+        programModel = ProgramsQueryModel.fromMap(element);
+        programModelList.add(programModel);
+        setState(() {
+          isLoading = false;
+        });
+        if (i == 4) {
+          break;
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
+
+  //function for Lessons api
+  Future<void> getLessons(String query) async {
+    String url = "https://632017e19f82827dcf24a655.mockapi.io/api/$query";
+    Response response = await get(Uri.parse(url));
+    Map data = jsonDecode(response.body);
+
+    for (element in data["items"]) {
+      try {
+        j++;
+        LessonsQueryModel lessonModel = LessonsQueryModel();
+        lessonModel = LessonsQueryModel.fromMap(element);
+        lessonModelList.add(lessonModel);
+        setState(() {
+          isLoading = false;
+        });
+        if (j == 4) {
+          break;
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
+
   List EventCatList = [
     {
       "imgUrl":
@@ -62,12 +110,19 @@ class _HomeState extends State<Home> {
   ];
 
   @override
+  void initState() {
+    getPrograms("programs");
+    getLessons("lessons");
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         endDrawerEnableOpenDragGesture: true,
         key: _drawerKey,
-        drawer:const CustomDrawer() ,
+        drawer: const CustomDrawer(),
         body: SingleChildScrollView(
           child: Container(
             child: Column(
@@ -129,7 +184,8 @@ class _HomeState extends State<Home> {
                         height: 20,
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -139,8 +195,12 @@ class _HomeState extends State<Home> {
                                   //code
                                 },
                                 label: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 20),
-                                  child: const Text("Programs", style: TextStyle(color: Colors.blue),),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 20),
+                                  child: const Text(
+                                    "Programs",
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
                                 ),
                                 icon: Image.asset("assets/images/bookmark.png"),
                                 style: OutlinedButton.styleFrom(
@@ -151,17 +211,24 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 10,),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Expanded(
                               child: OutlinedButton.icon(
                                 onPressed: () {
                                   //code
                                 },
                                 label: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 20),
-                                  child: const Text("Get Help", style: TextStyle(color: Colors.blue),),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 20),
+                                  child: const Text(
+                                    "Get Help",
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
                                 ),
-                                icon: Image.asset("assets/images/helpcircle.png"),
+                                icon:
+                                    Image.asset("assets/images/helpcircle.png"),
                                 style: OutlinedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0),
@@ -185,7 +252,10 @@ class _HomeState extends State<Home> {
                                 },
                                 label: const Padding(
                                   padding: EdgeInsets.symmetric(vertical: 20),
-                                  child: Text("Learn", style: TextStyle(color: Colors.blue),),
+                                  child: Text(
+                                    "Learn",
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
                                 ),
                                 icon: Image.asset("assets/images/bookopen.png"),
                                 style: OutlinedButton.styleFrom(
@@ -196,7 +266,9 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 10,),
+                            const SizedBox(
+                              width: 10,
+                            ),
                             Expanded(
                               child: OutlinedButton.icon(
                                 onPressed: () {
@@ -204,7 +276,10 @@ class _HomeState extends State<Home> {
                                 },
                                 label: const Padding(
                                   padding: EdgeInsets.symmetric(vertical: 20),
-                                  child: Text("DD Tracker", style: TextStyle(color: Colors.blue),),
+                                  child: Text(
+                                    "DD Tracker",
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
                                 ),
                                 icon: Image.asset("assets/trello.png"),
                                 style: OutlinedButton.styleFrom(
@@ -239,7 +314,12 @@ class _HomeState extends State<Home> {
                       Spacer(),
                       TextButton(
                         onPressed: () {
-                          //code here
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ShowAll(query: "programs"),
+                            ),
+                          );
                         },
                         child: const Text(
                           "View all",
@@ -256,86 +336,97 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
-                Container(
-                  height: 400,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: programCatList.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          child: InkWell(
-                            onTap: () {
-                              //code here
-                            },
-                            child: Container(
-                              margin: EdgeInsets.all(15),
-                              child: Material(
-                                color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                elevation: 10,
-                                child: Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.only(
-                                        topRight: Radius.circular(10),
-                                        topLeft: Radius.circular(10),
-                                      ),
-                                      child: Image.network(
-                                        programCatList[index]["imgUrl"],
-                                        fit: BoxFit.cover,
-                                        width: 250,
-                                        height: 200,
-                                      ),
-                                    ),
-                                    Positioned(
-                                      bottom: 30,
-                                      left: 10,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                isLoading
+                    ? Container(
+                        height: MediaQuery.of(context).size.height - 400,
+                        child: const Center(child: CircularProgressIndicator()),
+                      )
+                    : Container(
+                        height: 400,
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: programModelList.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                child: InkWell(
+                                  onTap: () {
+                                    //code here
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.all(15),
+                                    child: Material(
+                                      color: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      elevation: 10,
+                                      child: Stack(
                                         children: [
-                                          Text(
-                                            programCatList[index]["heading"],
-                                            style: const TextStyle(
-                                              color: Colors.blue,
-                                              fontSize: 20,
+                                          ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                              topRight: Radius.circular(10),
+                                              topLeft: Radius.circular(10),
+                                            ),
+                                            child: Image.asset(
+                                              "assets/images/program.jpg",
+                                              fit: BoxFit.cover,
+                                              width: 250,
+                                              height: 200,
                                             ),
                                           ),
-                                          Text(
-                                            programCatList[index]["content"],
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
+                                          Positioned(
+                                            bottom: 30,
+                                            left: 10,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  programModelList[index]
+                                                      .programCategory,
+                                                  style: const TextStyle(
+                                                    color: Colors.blue,
+                                                    fontSize: 20,
+                                                  ),
+                                                ),
+                                            SizedBox(
+                                              width: MediaQuery.of(context).size.width - 200, // Adjust the width as needed
+                                              child: Text(
+                                                programModelList[index].programName,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          Text(
-                                            programCatList[index]["lessons"],
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 18,
+                                                SizedBox(
+                                                  height: 20,
+                                                ),
+                                                Text(
+                                                  "${programModelList[index].programLesson} lessons",
+                                                  style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 18,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                ),
+                              );
+                            }),
+                      ),
                 SizedBox(
                   height: 20,
                 ),
@@ -485,7 +576,11 @@ class _HomeState extends State<Home> {
                       Spacer(),
                       TextButton(
                         onPressed: () {
-                          //code here
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ShowAll2(query: "lessons")));
                         },
                         child: const Text(
                           "View all",
@@ -505,91 +600,102 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: 10,
                 ),
-                Container(
-                  height: 400,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: EventCatList.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          child: InkWell(
-                            onTap: () {
-                              //code here
-                            },
-                            child: Container(
-                              margin: EdgeInsets.all(15),
-                              child: Material(
-                                color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                elevation: 10,
-                                child: Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.only(
-                                        topRight: Radius.circular(10),
-                                        topLeft: Radius.circular(10),
-                                      ),
-                                      child: Image.network(
-                                        LessonsCatList[index]["imgUrl"],
-                                        fit: BoxFit.cover,
-                                        width: 250,
-                                        height: 200,
-                                      ),
-                                    ),
-                                    Positioned(
-                                      bottom: 15,
-                                      left: 10,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                isLoading
+                    ? Container(
+                        height: MediaQuery.of(context).size.height - 400,
+                        child: const Center(child: CircularProgressIndicator()),
+                      )
+                    : Container(
+                        height: 400,
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: lessonModelList.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                child: InkWell(
+                                  onTap: () {
+                                    //code here
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.all(15),
+                                    child: Material(
+                                      color: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      elevation: 10,
+                                      child: Stack(
                                         children: [
-                                          Text(
-                                            LessonsCatList[index]["heading"],
-                                            style: const TextStyle(
-                                              color: Colors.blue,
-                                              fontSize: 20,
+                                          ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                              topRight: Radius.circular(10),
+                                              topLeft: Radius.circular(10),
+                                            ),
+                                            child: Image.asset(
+                                              "assets/images/lesson.jpg",
+                                              fit: BoxFit.cover,
+                                              width: 250,
+                                              height: 200,
                                             ),
                                           ),
-                                          Text(
-                                            LessonsCatList[index]["content"],
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 35,
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                LessonsCatList[index]["time"],
+                                          Positioned(
+                                            bottom: 15,
+                                            left: 10,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  lessonModelList[index]
+                                                      .lessonCategory,
+                                                  style: const TextStyle(
+                                                    color: Colors.blue,
+                                                    fontSize: 20,
+                                                  ),
+                                                ),
+                                            SizedBox(
+                                              width: MediaQuery.of(context).size.width - 200, // Adjust the width as needed
+                                              child: Text(
+                                                lessonModelList[index].lessonName,
+                                                overflow: TextOverflow.ellipsis,
                                                 style: const TextStyle(
                                                   color: Colors.black,
-                                                  fontSize: 18,
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                              SizedBox(
-                                                width: 150,
-                                              ),
-                                              const Icon(Icons.lock)
-                                            ],
+                                            ),
+                                                const SizedBox(
+                                                  height: 35,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "${lessonModelList[index].lessonDuration} min",
+                                                      style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 18,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 150,
+                                                    ),
+                                                    const Icon(Icons.lock)
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                ),
+                              );
+                            }),
+                      ),
               ],
             ),
           ),
