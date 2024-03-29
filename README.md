@@ -11,8 +11,11 @@ In the first task, we had to make a UI of an application that was given to us in
 #Second Task:
 
 In the second task, we had to integrate the two APIs i.e
+
 API 1- https://632017e19f82827dcf24a655.mockapi.io/api/programs
+
 API 2 - https://632017e19f82827dcf24a655.mockapi.io/api/lessons
+
 in the following card items.
 
 We have used the http package of Flutter to integrate the API.
