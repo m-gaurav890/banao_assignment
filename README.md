@@ -5,9 +5,11 @@ This is the assignment given to us by Banao Technology which is based on the Flu
 ## Getting Started
 
 #First Task:
+
 In the first task, we had to make a UI of an application that was given to us in Figma. By seeing the Figma image we have to build the UI.
 
 #Second Task:
+
 In the second task, we had to integrate the two APIs i.e
 API 1- https://632017e19f82827dcf24a655.mockapi.io/api/programs
 API 2 - https://632017e19f82827dcf24a655.mockapi.io/api/lessons
